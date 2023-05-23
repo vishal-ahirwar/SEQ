@@ -55,7 +55,8 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    static juce::AudioProcessorValueTreeState::ParameterLayout create_parameter_layout();
+    juce::AudioProcessorValueTreeState audio_processor_value_tree_state{ *this, nullptr, "Parameters", SEQAudioProcessor::create_parameter_layout() };
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SEQAudioProcessor)
