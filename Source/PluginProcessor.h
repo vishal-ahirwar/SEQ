@@ -10,6 +10,13 @@
 #pragma once
 
 #include <JuceHeader.h>
+struct ChainSettings
+{
+    float peak_freq{ 0 }, peak_gain_in_decibels{ 0 }, peak_quality{ 1.f };
+    float low_cut_freq{ 0 }, high_cut_freq{ 0 }, low_cut_slope{}, high_cut_slope{};
+};
+
+struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&);
 
 //==============================================================================
 /**

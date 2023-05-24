@@ -10,6 +10,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#define LOW_CUT_FREQ "LowCut Freq"
+#define HIGH_CUT_FREQ "HighCut Freq"
+#define PEAK_FREQ "Peak Freq"
+#define PEAK_QUALITY "Peak Quality"
+#define PEAK_GAIN "Peak Gain"
+
 //==============================================================================
 SEQAudioProcessor::SEQAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -137,6 +143,11 @@ bool SEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
   #endif
 }
 #endif
+struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&)
+{
+    ChainSettings setting;
+    return setting;
+};
 
 void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -165,7 +176,7 @@ void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
 //==============================================================================
 bool SEQAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return false; // (change this to false if you choose to not supply an editor)
 }
 
 juce::AudioProcessorEditor* SEQAudioProcessor::createEditor()
@@ -199,32 +210,32 @@ juce::AudioProcessorValueTreeState::ParameterLayout SEQAudioProcessor::create_pa
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "LowCut Freq",
-        "LowCut Freq",
+        LOW_CUT_FREQ,
+        LOW_CUT_FREQ,
         juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f
         )
     );
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "HighCut Freq",
-        "HighCut Freq",
+        HIGH_CUT_FREQ,
+        HIGH_CUT_FREQ,
         juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f
         )
     );
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Freq",
-        "Peak Freq",
+        PEAK_FREQ,
+        PEAK_FREQ,
         juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 750.f
         )
     );
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain",
-        "Peak Gain",
+    layout.add(std::make_unique<juce::AudioParameterFloat>(PEAK_GAIN,
+        PEAK_GAIN,
         juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.f
         )
     );
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Quality",
-        "Peak Quality",
+        PEAK_QUALITY,
+        PEAK_QUALITY,
         juce::NormalisableRange<float>(-0.1f, 10.f, 0.05f, 1.f), 1.f
         )
     );
