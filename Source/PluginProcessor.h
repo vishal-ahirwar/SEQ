@@ -10,10 +10,27 @@
 #pragma once
 
 #include <JuceHeader.h>
+
+enum class chain_positions
+{
+    LowCut,
+    Peak,
+    HighCut
+};
+
+enum class slope
+{
+    slope_12,
+    slope_24,
+    slope_36,
+    slope_48
+};
+
 struct ChainSettings
 {
     float peak_freq{ 0 }, peak_gain_in_decibels{ 0 }, peak_quality{ 1.f };
-    float low_cut_freq{ 0 }, high_cut_freq{ 0 }, low_cut_slope{}, high_cut_slope{};
+    float low_cut_freq{ 0 }, high_cut_freq{ 0 };
+    slope low_cut_slope{slope::slope_12}, high_cut_slope{slope::slope_12};
 };
 
 struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&);
@@ -73,6 +90,7 @@ private:
     using cut_filter = juce::dsp::ProcessorChain<filter, filter, filter, filter>;
     using mono_chain = juce::dsp::ProcessorChain<cut_filter, filter, cut_filter>;
     mono_chain left_chain, right_chain;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SEQAudioProcessor)
 };

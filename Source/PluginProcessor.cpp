@@ -111,6 +111,105 @@ void SEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     spec.sampleRate = sampleRate;
     left_chain.prepare(spec);
     right_chain.prepare(spec);
+    auto chain_settings = get_chain_settings(this->audio_processor_value_tree_state);
+    auto peak_coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,chain_settings.peak_freq,chain_settings.peak_quality,juce::Decibels::decibelsToGain(chain_settings.peak_gain_in_decibels));
+    *left_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+    *right_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+
+    auto cut_coefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chain_settings.low_cut_freq,sampleRate,2*((int)chain_settings.low_cut_slope+1));
+    auto& left_low_cut = left_chain.get<(int)chain_positions::LowCut>();
+
+    left_low_cut.setBypassed<0>(true);
+    left_low_cut.setBypassed<1>(true);
+    left_low_cut.setBypassed<2>(true);
+    left_low_cut.setBypassed<3>(true);
+    switch (chain_settings.low_cut_slope)
+    {
+    case slope::slope_12:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        break;
+    };
+    case slope::slope_24:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        break;
+    };
+    case slope::slope_36:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        *left_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        left_low_cut.setBypassed<2>(false);
+        break;
+
+    };
+    case slope::slope_48:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        *left_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        left_low_cut.setBypassed<2>(false);
+        *left_low_cut.get<3>().coefficients = *cut_coefficients[3];
+        left_low_cut.setBypassed<3>(false);
+        break;
+    };
+    }
+
+    auto& right_low_cut = right_chain.get<(int)chain_positions::LowCut>();
+
+    right_low_cut.setBypassed<0>(true);
+    right_low_cut.setBypassed<1>(true);
+    right_low_cut.setBypassed<2>(true);
+    right_low_cut.setBypassed<3>(true);
+    switch (chain_settings.low_cut_slope)
+    {
+    case slope::slope_12:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        break;
+    };
+    case slope::slope_24:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        break;
+    };
+    case slope::slope_36:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        *right_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        right_low_cut.setBypassed<2>(false);
+        break;
+
+    };
+    case slope::slope_48:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        *right_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        right_low_cut.setBypassed<2>(false);
+        *right_low_cut.get<3>().coefficients = *cut_coefficients[3];
+        right_low_cut.setBypassed<3>(false);
+        break;
+    };
+    }
 };
 
 
@@ -145,13 +244,18 @@ bool SEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
   #endif
 }
 #endif
-struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&_audio_processor_value_stree_state)
+struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&_audio_processor_value_tree_state)
 {
     ChainSettings setting;
-    setting.low_cut_freq = _audio_processor_value_stree_state.getRawParameterValue(LOW_CUT_FREQ)->load();
-    setting.high_cut_freq= _audio_processor_value_stree_state.getRawParameterValue(HIGH_CUT_FREQ)->load();
+    setting.low_cut_freq = _audio_processor_value_tree_state.getRawParameterValue(LOW_CUT_FREQ)->load();
+    setting.high_cut_freq= _audio_processor_value_tree_state.getRawParameterValue(HIGH_CUT_FREQ)->load();
     //continue fill the struct
     //...
+    setting.peak_freq= _audio_processor_value_tree_state.getRawParameterValue(PEAK_FREQ)->load();
+    setting.peak_gain_in_decibels= _audio_processor_value_tree_state.getRawParameterValue(PEAK_GAIN)->load();
+    setting.peak_quality= _audio_processor_value_tree_state.getRawParameterValue(PEAK_QUALITY)->load();
+    setting.low_cut_slope= static_cast<slope>(_audio_processor_value_tree_state.getRawParameterValue(LOW_CUT_SLOPE)->load());
+    setting.high_cut_slope=static_cast<slope>(_audio_processor_value_tree_state.getRawParameterValue(HIGH_CUT_SLOPE)->load());
 
     return setting;
 };
@@ -170,6 +274,107 @@ void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    auto chain_settings = get_chain_settings(this->audio_processor_value_tree_state);
+    auto peak_coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chain_settings.peak_freq, chain_settings.peak_quality, juce::Decibels::decibelsToGain(chain_settings.peak_gain_in_decibels));
+    *left_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+    *right_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+
+
+    auto cut_coefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chain_settings.low_cut_freq, getSampleRate(), 2 * ((int)chain_settings.low_cut_slope + 1));
+    auto& left_low_cut = left_chain.get<(int)chain_positions::LowCut>();
+
+    left_low_cut.setBypassed<0>(true);
+    left_low_cut.setBypassed<1>(true);
+    left_low_cut.setBypassed<2>(true);
+    left_low_cut.setBypassed<3>(true);
+    switch (chain_settings.low_cut_slope)
+    {
+    case slope::slope_12:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        break;
+    };
+    case slope::slope_24:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        break;
+    };
+    case slope::slope_36:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        *left_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        left_low_cut.setBypassed<2>(false);
+        break;
+
+    };
+    case slope::slope_48:
+    {
+        *left_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        left_low_cut.setBypassed<0>(false);
+        *left_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        left_low_cut.setBypassed<1>(false);
+        *left_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        left_low_cut.setBypassed<2>(false);
+        *left_low_cut.get<3>().coefficients = *cut_coefficients[3];
+        left_low_cut.setBypassed<3>(false);
+        break;
+    };
+    }
+
+    auto& right_low_cut = right_chain.get<(int)chain_positions::LowCut>();
+
+    right_low_cut.setBypassed<0>(true);
+    right_low_cut.setBypassed<1>(true);
+    right_low_cut.setBypassed<2>(true);
+    right_low_cut.setBypassed<3>(true);
+    switch (chain_settings.low_cut_slope)
+    {
+    case slope::slope_12:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        break;
+    };
+    case slope::slope_24:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        break;
+    };
+    case slope::slope_36:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        *right_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        right_low_cut.setBypassed<2>(false);
+        break;
+
+    };
+    case slope::slope_48:
+    {
+        *right_low_cut.get<0>().coefficients = *cut_coefficients[0];
+        right_low_cut.setBypassed<0>(false);
+        *right_low_cut.get<1>().coefficients = *cut_coefficients[1];
+        right_low_cut.setBypassed<1>(false);
+        *right_low_cut.get<2>().coefficients = *cut_coefficients[2];
+        right_low_cut.setBypassed<2>(false);
+        *right_low_cut.get<3>().coefficients = *cut_coefficients[3];
+        right_low_cut.setBypassed<3>(false);
+        break;
+    };
+    }
 
     juce::dsp::AudioBlock<float>block(buffer);
     auto left_block = block.getSingleChannelBlock(0);
