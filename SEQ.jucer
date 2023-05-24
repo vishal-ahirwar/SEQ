@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="Ymd1Sv" name="SEQ" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="Vishal Interprises">
   <MAINGROUP id="PzNuHq" name="SEQ">
     <GROUP id="{40136D60-F265-9B0C-1528-86B232343B64}" name="Source">
       <FILE id="Cw5mDr" name="PluginProcessor.cpp" compile="1" resource="0"
