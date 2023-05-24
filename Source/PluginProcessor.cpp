@@ -145,9 +145,14 @@ bool SEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
   #endif
 }
 #endif
-struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&)
+struct ChainSettings get_chain_settings(juce::AudioProcessorValueTreeState&_audio_processor_value_stree_state)
 {
     ChainSettings setting;
+    setting.low_cut_freq = _audio_processor_value_stree_state.getRawParameterValue(LOW_CUT_FREQ)->load();
+    setting.high_cut_freq= _audio_processor_value_stree_state.getRawParameterValue(HIGH_CUT_FREQ)->load();
+    //continue fill the struct
+    //...
+
     return setting;
 };
 
