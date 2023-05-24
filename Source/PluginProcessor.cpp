@@ -15,6 +15,8 @@
 #define PEAK_FREQ "Peak Freq"
 #define PEAK_QUALITY "Peak Quality"
 #define PEAK_GAIN "Peak Gain"
+#define LOW_CUT_SLOPE "LowCut Slope"
+#define HIGH_CUT_SLOPE "HighCut Slope"
 
 //==============================================================================
 SEQAudioProcessor::SEQAudioProcessor()
@@ -247,7 +249,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SEQAudioProcessor::create_pa
         string << "db/Oct";
         string_array.add(string);
     };
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCut Slope", "LowCut Slope", string_array, 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCut Slope", "HighCut Slope", string_array, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(LOW_CUT_SLOPE,LOW_CUT_SLOPE , string_array, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(HIGH_CUT_SLOPE, HIGH_CUT_SLOPE, string_array, 0));
     return layout;
 }
