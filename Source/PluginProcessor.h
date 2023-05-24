@@ -1,3 +1,4 @@
+//Copyright2023 Vishal Ahirwar. All rights reserved.
 /*
   ==============================================================================
 
@@ -55,7 +56,9 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    static juce::AudioProcessorValueTreeState::ParameterLayout create_parameter_layout();
+    //
+    //Juce requires All  apvt parameter at compile time
+    static juce::AudioProcessorValueTreeState::ParameterLayout create_parameter_layout();//return
     juce::AudioProcessorValueTreeState audio_processor_value_tree_state{ *this, nullptr, "Parameters", SEQAudioProcessor::create_parameter_layout() };
 private:
 
