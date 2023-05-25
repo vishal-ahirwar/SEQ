@@ -113,11 +113,16 @@ void SEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     right_chain.prepare(spec);
     auto chain_settings = get_chain_settings(this->audio_processor_value_tree_state);
     auto peak_coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,chain_settings.peak_freq,chain_settings.peak_quality,juce::Decibels::decibelsToGain(chain_settings.peak_gain_in_decibels));
-    *left_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
-    *right_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+    *left_chain.get<(int)chain_positions::peak>().coefficients = *peak_coefficients;
+    *right_chain.get<(int)chain_positions::peak>().coefficients = *peak_coefficients;
 
     auto cut_coefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chain_settings.low_cut_freq,sampleRate,2*((int)chain_settings.low_cut_slope+1));
-    auto& left_low_cut = left_chain.get<(int)chain_positions::LowCut>();
+    auto& left_low_cut = left_chain.get<(int)chain_positions::low_cut>();
+
+    /*TODO : (1). high cut parameters coefficient needs to be implemented*/
+    /*TODO : (2). code refactoring needs to be done!*/
+    /*TODO : (3). GUI Implementation needs to be done!*/
+    /*TODO : And that's it for this project*/
 
     left_low_cut.setBypassed<0>(true);
     left_low_cut.setBypassed<1>(true);
@@ -164,7 +169,7 @@ void SEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     };
     }
 
-    auto& right_low_cut = right_chain.get<(int)chain_positions::LowCut>();
+    auto& right_low_cut = right_chain.get<(int)chain_positions::low_cut>();
 
     right_low_cut.setBypassed<0>(true);
     right_low_cut.setBypassed<1>(true);
@@ -277,12 +282,12 @@ void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
 
     auto chain_settings = get_chain_settings(this->audio_processor_value_tree_state);
     auto peak_coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chain_settings.peak_freq, chain_settings.peak_quality, juce::Decibels::decibelsToGain(chain_settings.peak_gain_in_decibels));
-    *left_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
-    *right_chain.get<(int)chain_positions::Peak>().coefficients = *peak_coefficients;
+    *left_chain.get<(int)chain_positions::peak>().coefficients = *peak_coefficients;
+    *right_chain.get<(int)chain_positions::peak>().coefficients = *peak_coefficients;
 
 
     auto cut_coefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chain_settings.low_cut_freq, getSampleRate(), 2 * ((int)chain_settings.low_cut_slope + 1));
-    auto& left_low_cut = left_chain.get<(int)chain_positions::LowCut>();
+    auto& left_low_cut = left_chain.get<(int)chain_positions::low_cut>();
 
     left_low_cut.setBypassed<0>(true);
     left_low_cut.setBypassed<1>(true);
@@ -329,7 +334,7 @@ void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     };
     }
 
-    auto& right_low_cut = right_chain.get<(int)chain_positions::LowCut>();
+    auto& right_low_cut = right_chain.get<(int)chain_positions::low_cut>();
 
     right_low_cut.setBypassed<0>(true);
     right_low_cut.setBypassed<1>(true);
@@ -388,13 +393,12 @@ void SEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
 //==============================================================================
 bool SEQAudioProcessor::hasEditor() const
 {
-    return false; // (change this to false if you choose to not supply an editor)
+    return true; // (change this to false if you choose to not supply an editor)
 }
 
 juce::AudioProcessorEditor* SEQAudioProcessor::createEditor()
 {
-    //return new SEQAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(this);
+    return new SEQAudioProcessorEditor (*this);
 }
 
 //==============================================================================
@@ -403,12 +407,21 @@ void SEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream memory_output_stream(destData, true);
+    audio_processor_value_tree_state.state.writeToStream(memory_output_stream);
+
 }
 
 void SEQAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+    auto temp_tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (temp_tree.isValid())
+    {
+        audio_processor_value_tree_state.replaceState(temp_tree);
+        /*TODO : Do refactoring and call the update_filter here!*/
+    }
 }
 
 //==============================================================================

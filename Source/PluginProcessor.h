@@ -13,9 +13,9 @@
 
 enum class chain_positions
 {
-    LowCut,
-    Peak,
-    HighCut
+    low_cut,
+    peak,
+    high_cut
 };
 
 enum class slope

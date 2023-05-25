@@ -12,6 +12,16 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+
+
+class CustomRotarySlider :public juce::Slider
+{
+public:
+    CustomRotarySlider() :juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,juce::Slider::TextEntryBoxPosition::NoTextBox) {};
+private:
+protected:
+
+};
 //==============================================================================
 /**
 */
@@ -29,6 +39,10 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     SEQAudioProcessor& audioProcessor;
+
+    CustomRotarySlider peak_freq_slider, peak_gain_slider, peak_quality_slider, low_cut_freq_slider, high_cut_freq_slider,low_cut_slope_slider,high_cut_slope_slider;
+
+    std::vector<CustomRotarySlider*> get_components();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SEQAudioProcessorEditor)
 };
