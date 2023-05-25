@@ -16,6 +16,8 @@ SEQAudioProcessorEditor::SEQAudioProcessorEditor (SEQAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+
+    /*TODO : (0). Connect the sliders to parameters*/
     for (auto* component : get_components())
     {
         addAndMakeVisible(component);
@@ -32,11 +34,11 @@ SEQAudioProcessorEditor::~SEQAudioProcessorEditor()
 void SEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colours::white);
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("©2023 Vishal Ahirwar.", getLocalBounds(), juce::Justification::bottomLeft, 1);
+    g.setColour (juce::Colours::black);
+    g.setFont (21.0f);
+    g.drawFittedText ("©2023 Vishal Ahirwar.", getLocalBounds(), juce::Justification::centredTop, 1);
 
 }
 
