@@ -17,7 +17,7 @@
 class CustomRotarySlider :public juce::Slider
 {
 public:
-    CustomRotarySlider() :juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,juce::Slider::TextEntryBoxPosition::NoTextBox) {};
+    CustomRotarySlider() :juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,juce::Slider::TextEntryBoxPosition::NoTextBox) {setColour(juce::Slider::ColourIds::rotarySliderFillColourId,juce::Colours::aqua);};
 private:
 protected:
 

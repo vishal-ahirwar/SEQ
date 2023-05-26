@@ -41,11 +41,11 @@ SEQAudioProcessorEditor::~SEQAudioProcessorEditor()
 void SEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (juce::Colours::white);
-
-    g.setColour (juce::Colours::black);
-    g.setFont (21.0f);
-    g.drawFittedText ("©2023 Vishal Ahirwar.", getLocalBounds(), juce::Justification::centredTop, 1);
+    g.fillAll (juce::Colours::black);
+    
+    g.setColour (juce::Colours::aqua);
+    g.setFont (13.f);
+    g.drawFittedText ("Copyright© 2023 Vishal Ahirwar.All rights reserved to Vishal Interprises.", getLocalBounds(), juce::Justification::centredBottom, 1);
 
 }
 
