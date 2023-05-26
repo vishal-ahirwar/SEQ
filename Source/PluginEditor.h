@@ -44,5 +44,7 @@ private:
 
     std::vector<CustomRotarySlider*> get_components();
 
+    juce::AudioProcessorValueTreeState::SliderAttachment peak_freq_slider_attachment, peak_gain_slider_attachment, peak_quality_slider_attachment, low_cut_freq_slider_attachment, high_cut_freq_slider_attachment, low_cut_slope_slider_attachment, high_cut_slope_slider_attachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SEQAudioProcessorEditor)
 };

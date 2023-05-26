@@ -10,6 +10,13 @@
 #pragma once
 
 #include <JuceHeader.h>
+#define LOW_CUT_FREQ "LowCut Freq"
+#define HIGH_CUT_FREQ "HighCut Freq"
+#define PEAK_FREQ "Peak Freq"
+#define PEAK_QUALITY "Peak Quality"
+#define PEAK_GAIN "Peak Gain"
+#define LOW_CUT_SLOPE "LowCut Slope"
+#define HIGH_CUT_SLOPE "HighCut Slope"
 
 enum class chain_positions
 {

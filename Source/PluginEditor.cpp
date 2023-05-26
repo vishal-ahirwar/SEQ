@@ -12,7 +12,14 @@
 
 //==============================================================================
 SEQAudioProcessorEditor::SEQAudioProcessorEditor (SEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    peak_freq_slider_attachment(audioProcessor.audio_processor_value_tree_state,PEAK_FREQ,this->peak_freq_slider),
+    peak_gain_slider_attachment(audioProcessor.audio_processor_value_tree_state,PEAK_GAIN,peak_gain_slider),
+    peak_quality_slider_attachment(audioProcessor.audio_processor_value_tree_state,PEAK_QUALITY,peak_quality_slider),
+    low_cut_freq_slider_attachment(audioProcessor.audio_processor_value_tree_state,LOW_CUT_FREQ,low_cut_freq_slider),
+    high_cut_freq_slider_attachment(audioProcessor.audio_processor_value_tree_state,HIGH_CUT_FREQ,high_cut_freq_slider),
+    low_cut_slope_slider_attachment(audioProcessor.audio_processor_value_tree_state,LOW_CUT_SLOPE,low_cut_slope_slider),
+    high_cut_slope_slider_attachment(audioProcessor.audio_processor_value_tree_state,HIGH_CUT_SLOPE,high_cut_slope_slider)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
